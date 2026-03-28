@@ -1584,6 +1584,11 @@ their corresponding top-level category object in your `settings.json` file.
   - **Default:** `true`
   - **Requires restart:** Yes
 
+- **`experimental.autoDistillation`** (boolean):
+  - **Description:** Enable automatic distillation for large tool outputs.
+  - **Default:** `false`
+  - **Requires restart:** Yes
+
 - **`experimental.worktrees`** (boolean):
   - **Description:** Enable automated Git worktree management for parallel work.
   - **Default:** `false`
@@ -1702,6 +1707,30 @@ their corresponding top-level category object in your `settings.json` file.
   - **Description:** Enable summarization of truncated content via a small model
     for the Agent History Provider.
   - **Default:** `false`
+  - **Requires restart:** Yes
+
+- **`experimental.agentHistoryTargetRetainedTokens`** (number):
+  - **Description:** The target number of tokens to retain in the session
+    history.
+  - **Default:** `60000`
+  - **Requires restart:** Yes
+
+- **`experimental.agentHistoryNormalMessageTokens`** (number):
+  - **Description:** The target number of tokens to budget for a normal
+    conversation turn.
+  - **Default:** `2500`
+  - **Requires restart:** Yes
+
+- **`experimental.agentHistoryMaximumMessageTokens`** (number):
+  - **Description:** The maximum number of tokens a single conversation turn can
+    consume before truncation.
+  - **Default:** `10000`
+  - **Requires restart:** Yes
+
+- **`experimental.agentHistoryNormalizationHeadRatio`** (number):
+  - **Description:** The ratio of tokens to retain from the beginning of a
+    truncated message (0.0 to 1.0).
+  - **Default:** `0.2`
   - **Requires restart:** Yes
 
 - **`experimental.topicUpdateNarration`** (boolean):

@@ -2761,6 +2761,13 @@
           "default": true,
           "type": "boolean"
         },
+        "autoDistillation": {
+          "title": "Auto Distillation",
+          "description": "Enable automatic distillation for large tool outputs.",
+          "markdownDescription": "Enable automatic distillation for large tool outputs.\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `false`",
+          "default": false,
+          "type": "boolean"
+        },
         "worktrees": {
           "title": "Enable Git Worktrees",
           "description": "Enable automated Git worktree management for parallel work.",
@@ -2934,6 +2941,34 @@
           "markdownDescription": "Enable summarization of truncated content via a small model for the Agent History Provider.\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `false`",
           "default": false,
           "type": "boolean"
+        },
+        "agentHistoryTargetRetainedTokens": {
+          "title": "Target Retained Tokens",
+          "description": "The target number of tokens to retain in the session history.",
+          "markdownDescription": "The target number of tokens to retain in the session history.\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `60000`",
+          "default": 60000,
+          "type": "number"
+        },
+        "agentHistoryNormalMessageTokens": {
+          "title": "Normal Message Tokens",
+          "description": "The target number of tokens to budget for a normal conversation turn.",
+          "markdownDescription": "The target number of tokens to budget for a normal conversation turn.\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `2500`",
+          "default": 2500,
+          "type": "number"
+        },
+        "agentHistoryMaximumMessageTokens": {
+          "title": "Maximum Message Tokens",
+          "description": "The maximum number of tokens a single conversation turn can consume before truncation.",
+          "markdownDescription": "The maximum number of tokens a single conversation turn can consume before truncation.\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `10000`",
+          "default": 10000,
+          "type": "number"
+        },
+        "agentHistoryNormalizationHeadRatio": {
+          "title": "Normalization Head Ratio",
+          "description": "The ratio of tokens to retain from the beginning of a truncated message (0.0 to 1.0).",
+          "markdownDescription": "The ratio of tokens to retain from the beginning of a truncated message (0.0 to 1.0).\n\n- Category: `Experimental`\n- Requires restart: `yes`\n- Default: `0.2`",
+          "default": 0.2,
+          "type": "number"
         },
         "topicUpdateNarration": {
           "title": "Topic & Update Narration",

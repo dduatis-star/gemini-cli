@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ToolOutputDistillationService } from './toolDistillationService.js';
-import type { Config } from '../index.js';
+import type { Config, Part } from '../index.js';
 import type { GeminiClient } from '../core/client.js';
 
 describe('ToolOutputDistillationService', () => {
@@ -28,7 +28,7 @@ describe('ToolOutputDistillationService', () => {
     } as unknown as Config;
     mockGeminiClient = {
       generateContent: vi.fn().mockResolvedValue({
-        candidates: [{ content: { parts: [{ text: 'Mock Structural Map' }] } }],
+        candidates: [{ content: { parts: [{ text: 'Mock Intent Summary' }] } }],
       }),
     } as unknown as GeminiClient;
     service = new ToolOutputDistillationService(
@@ -39,12 +39,43 @@ describe('ToolOutputDistillationService', () => {
   });
 
   it('should generate a structural map for oversized content within limits', async () => {
-    // > threshold * SUMMARIZATION_THRESHOLD
-    const largeContent = 'A'.repeat(401);
+    // > threshold * SUMMARIZATION_THRESHOLD (100 * 4 = 400)
+    const largeContent = 'A'.repeat(500);
     const result = await service.distill('test-tool', 'call-1', largeContent);
 
     expect(mockGeminiClient.generateContent).toHaveBeenCalled();
-    expect(result.truncatedContent).toContain('Mock Structural Map');
+    const text =
+      typeof result.truncatedContent === 'string'
+        ? result.truncatedContent
+        : (result.truncatedContent as Array<{ text: string }>)[0].text;
+    expect(text).toContain('Strategic Significance');
+  });
+
+  it('should structurally truncate functionResponse while preserving schema', async () => {
+    // threshold is 100
+    const hugeValue = 'H'.repeat(1000);
+    const content = [
+      {
+        functionResponse: {
+          name: 'test_tool',
+          id: '123',
+          response: {
+            stdout: hugeValue,
+            stderr: 'no error',
+          },
+        },
+      },
+    ] as unknown as Part[];
+
+    const result = await service.distill('test-tool', 'call-1', content);
+    const truncatedParts = result.truncatedContent as Part[];
+    expect(truncatedParts.length).toBe(1);
+    const fr = truncatedParts[0].functionResponse!;
+    const resp = fr.response as Record<string, unknown>;
+    expect(fr.name).toBe('test_tool');
+    expect(resp['stderr']).toBe('no error');
+    expect(resp['stdout'] as string).toContain('[Message Normalized');
+    expect(resp['stdout'] as string).toContain('Full output saved to');
   });
 
   it('should skip structural map for extremely large content exceeding MAX_DISTILLATION_SIZE', async () => {
@@ -52,7 +83,11 @@ describe('ToolOutputDistillationService', () => {
     const result = await service.distill('test-tool', 'call-2', massiveContent);
 
     expect(mockGeminiClient.generateContent).not.toHaveBeenCalled();
-    expect(result.truncatedContent).not.toContain('Mock Structural Map');
+    const text =
+      typeof result.truncatedContent === 'string'
+        ? result.truncatedContent
+        : (result.truncatedContent as Array<{ text: string }>)[0].text;
+    expect(text).not.toContain('Strategic Significance');
   });
 
   it('should skip structural map for content below summarization threshold', async () => {
@@ -61,6 +96,6 @@ describe('ToolOutputDistillationService', () => {
     const result = await service.distill('test-tool', 'call-3', mediumContent);
 
     expect(mockGeminiClient.generateContent).not.toHaveBeenCalled();
-    expect(result.truncatedContent).not.toContain('Mock Structural Map');
+    expect(result.truncatedContent).not.toContain('Mock Intent Summary');
   });
 });
